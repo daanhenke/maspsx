@@ -334,7 +334,12 @@ def get_next_register(reg: str):
         "$6": "$7",  # $a2
         "$8": "$9",  # $t0
         "$10": "$11",  # t2
+        "$12": "$13",  # t4
+        "$14": "$15",  # t6
+        "$16": "$17",  # s0
         "$18": "$19",  # s2
+        "$20": "$21",  # s4
+        "$22": "$23",  # s6
     }
     next_reg = lut.get(reg)
     assert next_reg is not None, f"Unknown mapping for {reg}"
@@ -384,7 +389,9 @@ def load_immediate_double(line: str):
         if r1_lower:
             res.append(f"ori\t{r1},0x{r1_lower:X}")
     else:
-        res.append(f"li\t{r1},0x0")
+        # aspsx builds the zero half with an ori against $zero; left as a
+        # "li" macro, gnu as assembles it to a move, a different encoding.
+        res.append(f"ori	{r1},$zero,0x0")
 
     res.append(f"lui\t{r2},0x{r2_upper:X}")
     if r2_lower:
